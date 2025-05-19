@@ -1,12 +1,14 @@
-
 // Groq API Integration Service
-const GROQ_API_KEY = "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";
-const API_URL = "https://api.groq.com/openai/v1/chat/completions";
+import { incorporatePhilosophy } from "./guruPhilosophy";
 
+// Definição dos tipos
 export interface GroqMessage {
   role: "system" | "user" | "assistant";
   content: string;
 }
+
+const GROQ_API_KEY = "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";
+const API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 export interface GroqResponse {
   text: string;
@@ -15,10 +17,11 @@ export interface GroqResponse {
 
 export const generateGroqResponse = async (userInput: string, messageHistory: GroqMessage[] = []): Promise<string> => {
   try {
-    // Get settings from localStorage, or use defaults
-    const modelId = localStorage.getItem('guroModel') || "llama-3.3-70b-versatile";
-    const systemPrompt = localStorage.getItem('guroSystemPrompt') || 
-      "Você é o Guro do PCP, um assistente especializado em Planejamento e Controle da Produção e Logística. Você tem uma personalidade amigável e simpática. Você deve fornecer respostas técnicas precisas, mas sempre de forma acessível e clara. Você só responde sobre tópicos relacionados a PCP e Logística. Se o usuário perguntar sobre outro assunto, gentilmente reoriente a conversa para sua área de especialidade usando técnicas de PNL. Use exemplos práticos quando possível e ofereça opções de tópicos se o usuário demonstrar pouco conhecimento na área.";
+    const model = localStorage.getItem('guruModel') || "llama-3.3-70b-versatile";
+    const baseSystemPrompt = localStorage.getItem('guruSystemPrompt') || "Você é o Guru do PCP, um assistente especializado em Planejamento e Controle da Produção e Logística. Forneça respostas úteis, precisas e educativas sobre esses temas.";
+    
+    // Incorporar a filosofia do Guru do PCP no prompt do sistema
+    const systemPrompt = incorporatePhilosophy(baseSystemPrompt);
 
     // Lista de tópicos principais para contexto
     const mainTopics = `
@@ -70,7 +73,7 @@ export const generateGroqResponse = async (userInput: string, messageHistory: Gr
     const enhancedSystemPrompt = `${systemPrompt}\n\n${mainTopics}\n\n${pnlInstructions}`;
 
     // Construir a lista de mensagens com o histórico
-    let messages: GroqMessage[] = [
+    const messages: GroqMessage[] = [
       {
         role: "system",
         content: enhancedSystemPrompt
@@ -78,12 +81,9 @@ export const generateGroqResponse = async (userInput: string, messageHistory: Gr
     ];
     
     // Adicionar histórico de mensagens se existir
-    if (messageHistory && messageHistory.length > 0) {
-      messages = [...messages, ...messageHistory];
-    }
-    
-    // Adicionar a mensagem atual do usuário
-    messages.push({ role: "user", content: userInput });
+    const allMessages = messageHistory && messageHistory.length > 0 
+      ? [...messages, ...messageHistory, { role: "user", content: userInput }]
+      : [...messages, { role: "user", content: userInput }];
 
     const response = await fetch(API_URL, {
       method: "POST",
@@ -92,8 +92,8 @@ export const generateGroqResponse = async (userInput: string, messageHistory: Gr
         "Authorization": `Bearer ${GROQ_API_KEY}`
       },
       body: JSON.stringify({
-        model: modelId,
-        messages: messages
+        model: model,
+        messages: allMessages
       })
     });
 

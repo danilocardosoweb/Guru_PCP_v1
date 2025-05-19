@@ -12,10 +12,10 @@ interface SuggestedTopicsProps {
 }
 
 const SuggestedTopics: React.FC<SuggestedTopicsProps> = ({ onTopicSelect }) => {
-  // Opções de personalidade e técnicas de PNL para o Guro do PCP
+  // Opções de personalidade e técnicas de PNL para o Guru do PCP
   const pnlOptions = [
     {
-      title: "Personalidades do Guro",
+      title: "Personalidades do Guru",
       icon: <MessageSquare size={16} />,
       options: [
         { text: "Como você pode me ajudar como especialista técnico em PCP?", icon: <Gauge size={14} /> },

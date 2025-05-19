@@ -21,18 +21,18 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   showTopicSuggestions = false,
   onTopicSelect = () => {} 
 }) => {
-  // Alternar entre diferentes imagens do Guro com base no conteúdo da mensagem
+  // Alternar entre diferentes imagens do Guru com base no conteúdo da mensagem
   // Isso dará um pouco de variedade à interação
-  const getGuroImage = () => {
+  const getGuruImage = () => {
     // Simplificando, vamos usar a primeira imagem para mensagens normais,
     // a segunda para mensagens mais explicativas (mais longas)
     // e a terceira para mensagens curtas/concisas
     if (message.length > 200) {
-      return "/lovable-uploads/416906b4-aade-4a6f-9098-08868b80e288.png"; // Guro explicando
+      return "/lovable-uploads/416906b4-aade-4a6f-9098-08868b80e288.png"; // Guru explicando
     } else if (message.length < 50) {
-      return "/lovable-uploads/563c23d2-5a70-41a7-8a12-fba62e307f0b.png"; // Guro meditando
+      return "/lovable-uploads/563c23d2-5a70-41a7-8a12-fba62e307f0b.png"; // Guru meditando
     }
-    return "/lovable-uploads/112953cb-ad22-42b9-8cc5-80a48e065301.png"; // Guro padrão
+    return "/lovable-uploads/112953cb-ad22-42b9-8cc5-80a48e065301.png"; // Guru padrão
   };
   
   // Função para renderizar mensagens com termos clicáveis entre asteriscos duplos
@@ -110,7 +110,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
           </div>
         ) : (
           <Avatar className="w-8 h-8 rounded-full bg-accent">
-            <AvatarImage src={getGuroImage()} alt="Guro do PCP" />
+            <AvatarImage src={getGuruImage()} alt="Guru do PCP" />
             <AvatarFallback className="bg-accent text-primary">G</AvatarFallback>
           </Avatar>
         )}

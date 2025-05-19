@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
@@ -18,15 +17,15 @@ interface Message {
 }
 
 const personalityGreetings = {
-  specialist: "Olá. Sou o Guro do PCP, especialista técnico em Planejamento e Controle da Produção e Logística. Como posso ajudar com questões técnicas hoje?",
-  teacher: "Olá! Sou o Guro do PCP, professor de Planejamento e Controle da Produção e Logística. Estou aqui para explicar conceitos e tirar suas dúvidas com exemplos práticos. Como posso ajudar?",
-  friendly: "Olá! Eu sou o Guro do PCP, especialista em Planejamento e Controle da Produção e Logística. Como posso ajudar você hoje? Se ainda não está familiarizado com esses temas, posso sugerir alguns tópicos para começarmos.",
-  concise: "Guro do PCP aqui. Como posso ajudar?"
+  specialist: "Olá. Sou o Guru do PCP, especialista técnico em Planejamento e Controle da Produção e Logística. Como posso ajudar com questões técnicas hoje?",
+  teacher: "Olá! Sou o Guru do PCP, professor de Planejamento e Controle da Produção e Logística. Estou aqui para explicar conceitos e tirar suas dúvidas com exemplos práticos. Como posso ajudar?",
+  friendly: "Olá! Eu sou o Guru do PCP, especialista em Planejamento e Controle da Produção e Logística. Como posso ajudar você hoje? Se ainda não está familiarizado com esses temas, posso sugerir alguns tópicos para começarmos.",
+  concise: "Guru do PCP aqui. Como posso ajudar?"
 };
 
 const ChatContainer: React.FC = () => {
   // Get the selected personality or default to friendly
-  const personality = localStorage.getItem('guroPersonality') || 'friendly';
+  const personality = localStorage.getItem('guruPersonality') || 'friendly';
   const greeting = personalityGreetings[personality as keyof typeof personalityGreetings] || personalityGreetings.friendly;
 
   // Estado para armazenar as mensagens da conversa
@@ -37,8 +36,8 @@ const ChatContainer: React.FC = () => {
   
   // Carregar mensagens do localStorage quando o componente é montado
   useEffect(() => {
-    const savedMessages = localStorage.getItem('guroMessages');
-    const savedMessageHistory = localStorage.getItem('guroMessageHistory');
+    const savedMessages = localStorage.getItem('guruMessages');
+    const savedMessageHistory = localStorage.getItem('guruMessageHistory');
     
     if (savedMessages) {
       try {
@@ -82,14 +81,14 @@ const ChatContainer: React.FC = () => {
   // Salvar mensagens no localStorage quando elas são atualizadas
   useEffect(() => {
     if (messages.length > 0) {
-      localStorage.setItem('guroMessages', JSON.stringify(messages));
+      localStorage.setItem('guruMessages', JSON.stringify(messages));
     }
   }, [messages]);
   
   // Salvar histórico de mensagens para a API quando é atualizado
   useEffect(() => {
     if (messageHistory.length > 0) {
-      localStorage.setItem('guroMessageHistory', JSON.stringify(messageHistory));
+      localStorage.setItem('guruMessageHistory', JSON.stringify(messageHistory));
     }
   }, [messageHistory]);
   const [isLoading, setIsLoading] = useState(false);
@@ -127,12 +126,10 @@ const ChatContainer: React.FC = () => {
 
   // Função para converter mensagens do formato Message para GroqMessage
   const convertToGroqMessages = (messages: Message[]): GroqMessage[] => {
-    return messages
-      .filter(msg => msg.text.trim() !== '') // Filtra mensagens vazias
-      .map(msg => ({
-        role: msg.isUser ? 'user' : 'assistant',
-        content: msg.text
-      }));
+    return messages.map(msg => ({
+      role: msg.isUser ? "user" as const : "assistant" as const,
+      content: msg.text
+    }));
   };
 
   // Função para limpar o histórico de conversas
@@ -147,8 +144,8 @@ const ChatContainer: React.FC = () => {
     
     setMessages([welcomeMessage]);
     setMessageHistory([]);
-    localStorage.removeItem('guroMessages');
-    localStorage.removeItem('guroMessageHistory');
+    localStorage.removeItem('guruMessages');
+    localStorage.removeItem('guruMessageHistory');
     
     toast({
       title: "Conversa reiniciada",
@@ -195,10 +192,10 @@ const ChatContainer: React.FC = () => {
         setMessages(prevMessages => [...prevMessages, botMessage]);
         
         // Atualizar o histórico de mensagens para a API
-        const updatedHistory = [
+        const updatedHistory: GroqMessage[] = [
           ...currentHistory,
-          { role: 'user', content: text },
-          { role: 'assistant', content: response }
+          { role: "user", content: text },
+          { role: "assistant", content: response }
         ];
         setMessageHistory(updatedHistory);
         
