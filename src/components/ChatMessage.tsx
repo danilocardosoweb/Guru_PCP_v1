@@ -1,10 +1,18 @@
 
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { User } from 'lucide-react';
+import { User, Maximize2, Copy } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import SuggestedTopics from './SuggestedTopics';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { toast } from "@/hooks/use-toast";
 
 interface ChatMessageProps {
   message: string;
@@ -21,6 +29,23 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   showTopicSuggestions = false,
   onTopicSelect = () => {} 
 }) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
+  // Função para copiar a mensagem para a área de transferência
+  const copyToClipboard = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Impede que o diálogo seja aberto
+    navigator.clipboard.writeText(message)
+      .then(() => {
+        toast({
+          title: "Mensagem copiada",
+          description: "O texto foi copiado para a área de transferência",
+          duration: 3000,
+        });
+      })
+      .catch(err => {
+        console.error('Erro ao copiar texto: ', err);
+      });
+  };
   // Alternar entre diferentes imagens do Guru com base no conteúdo da mensagem
   // Isso dará um pouco de variedade à interação
   const getGuruImage = () => {
@@ -116,19 +141,70 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
         )}
       </div>
       
-      <div 
-        className={cn(
-          "py-3 px-4 rounded-2xl max-w-[80%] shadow-sm",
-          isUser ? "bg-primary text-white rounded-tr-none" : "bg-accent text-foreground rounded-tl-none",
-          animate && !isUser && "animate-bounce-in",
-        )}
-      >
-        <div className="text-sm md:text-base whitespace-pre-wrap">
-          {renderMessageWithClickableTerms(message)}
-        </div>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger asChild>
+          <div 
+            className={cn(
+              "py-3 px-4 rounded-2xl max-w-[80%] shadow-sm relative group cursor-pointer",
+              isUser ? "bg-primary text-white rounded-tr-none" : "bg-accent text-foreground rounded-tl-none",
+              animate && !isUser && "animate-bounce-in",
+            )}
+          >
+            {!isUser && (
+              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-6 w-6 rounded-full bg-white/20 hover:bg-white/40"
+                  onClick={copyToClipboard}
+                >
+                  <Copy size={12} />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-6 w-6 rounded-full bg-white/20 hover:bg-white/40"
+                >
+                  <Maximize2 size={12} />
+                </Button>
+              </div>
+            )}
+            <div className="text-sm md:text-base whitespace-pre-wrap">
+              {renderMessageWithClickableTerms(message)}
+            </div>
+          </div>
+        </DialogTrigger>
         
-        {/* Sugestões de tópicos removidas conforme solicitado */}
-      </div>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 mb-4">
+              {!isUser && (
+                <Avatar className="w-8 h-8 rounded-full">
+                  <AvatarImage src={getGuruImage()} alt="Guru do PCP" />
+                  <AvatarFallback>G</AvatarFallback>
+                </Avatar>
+              )}
+              <span>{isUser ? "Sua mensagem" : "Resposta do Guru do PCP"}</span>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="text-base md:text-lg whitespace-pre-wrap">
+            {renderMessageWithClickableTerms(message)}
+          </div>
+          
+          <div className="mt-4 flex justify-end">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={copyToClipboard}
+              className="flex items-center gap-2"
+            >
+              <Copy size={14} />
+              <span>Copiar texto</span>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
