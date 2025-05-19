@@ -10,12 +10,12 @@ const Header = () => {
       <div className="container max-w-4xl mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
           <Avatar className="w-10 h-10 rounded-full shadow-md">
-            <AvatarImage src="/lovable-uploads/112953cb-ad22-42b9-8cc5-80a48e065301.png" alt="Guro do PCP" />
+            <AvatarImage src="/lovable-uploads/112953cb-ad22-42b9-8cc5-80a48e065301.png" alt="Guru do PCP" />
             <AvatarFallback className="bg-gradient-to-r from-primary to-secondary text-white font-bold">G</AvatarFallback>
           </Avatar>
           <div>
             <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Guro do PCP
+              Guru do PCP
             </h1>
             <p className="text-xs text-muted-foreground">Especialista em PCP e Logística</p>
           </div>
