@@ -21,7 +21,7 @@ const Index = () => {
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-purple-50">
       <Header />
       <main className="flex-1 container max-w-4xl mx-auto flex flex-col px-4">
-        <div className="mt-8 mb-6 text-center animate-fade-in">
+        <div className="hidden md:block mt-8 mb-6 text-center animate-fade-in">
           <div className="flex justify-center mb-4">
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
